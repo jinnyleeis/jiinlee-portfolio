@@ -44,12 +44,12 @@ export default async function ProjectDetailPage({ params }: Props) {
       </header>
 
       {project.cover_image_path && (
-        <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden bg-[#FFF1C9]">
+        <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden ">
           <Image
             src={getImageUrl(project.cover_image_path)}
             alt={project.title}
             fill
-            className="object-cover"
+            className="object-contain object-center"
           />
         </div>
       )}

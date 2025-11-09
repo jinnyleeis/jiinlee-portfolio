@@ -15,7 +15,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   const { data, error } = await supabase
     .from("projects")
     .select("*")
-    .eq("slug", params.slug)
+  .eq("slug", decodeURIComponent(params.slug))
     .single();
 
   if (error || !data) return notFound();

@@ -7,7 +7,7 @@ import { ProjectMetaTags } from "./ProjectMetaTags";
 export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
-      href={`/projects/${project.slug}`}
+      href={`/projects/${encodeURIComponent(project.slug)}`}
       className="group border border-border-soft rounded-2xl bg-white/70 hover:bg-white transition flex flex-col md:flex-row gap-4 p-4"
     >
       {project.cover_image_path && (

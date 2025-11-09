@@ -18,6 +18,9 @@ export function AdminProjectForm({ project }: { project?: Project }) {
       className="space-y-3 border border-border-soft rounded-2xl p-4 bg-white/80"
     >
       <input type="hidden" name="id" defaultValue={project?.id} />
+          {project && (
+            <input type="hidden" name="original_slug" defaultValue={project.slug} />
+          )}
       <h2 className="title-18_sb mb-2">
         {project ? `Edit: ${project.title}` : "New Project"}
       </h2>

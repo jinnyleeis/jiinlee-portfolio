@@ -16,8 +16,8 @@ export async function uploadProjectImage(file: File | null) {
     .upload(path, file, { upsert: true });
 
   if (error) {
-    console.error(error);
-    throw error;
+    console.error("createOrUpdateProject error", error);
+    throw new Error(error.message || "Project upsert failed");
   }
 
   // DB에는 path만 저장, UI에서 getImageUrl로 URL 생성
@@ -35,6 +35,7 @@ export async function createOrUpdateProject(formData: FormData) {
   const supabase = await createServerSupabaseAdminClient();
 
   const id = formData.get("id")?.toString() || undefined;
+  const original_slug = formData.get("original_slug")?.toString() || null;
   const slug = formData.get("slug")?.toString() || "";
   const title = formData.get("title")?.toString() || "";
   const subtitle = formData.get("subtitle")?.toString() || null;
@@ -80,9 +81,18 @@ export async function createOrUpdateProject(formData: FormData) {
     cover_image_path,
   };
 
-  const { error } = await supabase.from("projects").upsert(payload, {
-    onConflict: "slug",
-  });
+  // update vs insert: id가 있으면 id로 update, 없으면 insert
+  let error: any = null;
+  if (id) {
+    const { error: upErr } = await supabase
+      .from("projects")
+      .update(payload)
+      .eq("id", id);
+    error = upErr;
+  } else {
+    const { error: insErr } = await supabase.from("projects").insert(payload);
+    error = insErr;
+  }
 
   if (error) {
     console.error(error);
@@ -90,6 +100,9 @@ export async function createOrUpdateProject(formData: FormData) {
   }
 
   revalidatePath("/");
+  if (original_slug && original_slug !== slug) {
+    revalidatePath("/projects/" + original_slug);
+  }
   revalidatePath("/projects/" + slug);
   revalidatePath("/admin");
 }

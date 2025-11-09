@@ -2,32 +2,228 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 기본 폰트 설정 */
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --default-font-weight: 600;
+  --default-font-size: 18px;
+  --default-line-height: auto;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+/* ======================================== */
+/*              Heading Typography        */
+/* ======================================== */
+.heading-48_b {
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 72px;
+  letter-spacing: -0.02em;
+}
+.heading-40_b {
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 72px;
+  letter-spacing: -0.02em;
+}
+.heading-32_b {
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 48px;
+  letter-spacing: -0.02em;
+}
+.heading-28_b {
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 42px;
+  letter-spacing: -0.02em;
+}
+.heading-24_b {
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 36px;
+  letter-spacing: -0.02em;
+}
+.heading-20_b {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 30px;
+  letter-spacing: -0.02em;
+}
+.heading-18_b {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: -0.02em;
+}
+.heading-16_b {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.015em;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+/* Title */
+.title-32_sb {
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 48px;
+  letter-spacing: -0.02em;
+}
+.title-28_sb {
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 42px;
+  letter-spacing: -0.02em;
+}
+.title-26_sb {
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 40px;
+  letter-spacing: -0.02em;
+}
+.title-24_sb {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 36px;
+  letter-spacing: -0.02em;
+}
+.title-20_sb {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 30px;
+  letter-spacing: -0.02em;
+}
+.title-18_sb {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: -0.02em;
+}
+.title-16_sb {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.015em;
+}
+.title-14_sb {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.015em;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Body */
+.body-18_m {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 30px;
+  letter-spacing: -0.015em;
+}
+.body-16_m {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: -0.015em;
+}
+.body-16_r {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: -0.015em;
+}
+.body-14_m {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: -0.015em;
+}
+.body-14_r {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: -0.015em;
+}
+.body-14_l {
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: -0.015em;
+}
+.body-13_m {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: -0.015em;
+}
+.body-13_r {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: -0.015em;
+}
+.body-13_l {
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: -0.015em;
+}
+
+/* Label */
+.label-18_sb {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+}
+.label-16_sb {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: -0.02em;
+}
+.label-16_m {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: -0.02em;
+}
+.label-14_sb {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: -0.02em;
+}
+.label-12_sb {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.02em;
+}
+.label-11_sb {
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: -0.02em;
+}
+
+/* Markdown 기본 스타일 */
+.markdown-body h1 {
+  @apply heading-28_b mb-4 mt-6;
+}
+.markdown-body h2 {
+  @apply title-24_sb mb-3 mt-5;
+}
+.markdown-body h3 {
+  @apply title-20_sb mb-2 mt-4;
+}
+.markdown-body p {
+  @apply body-16_r mb-3;
+}
+.markdown-body ul {
+  @apply list-disc pl-5 body-16_r mb-3;
+}
+.markdown-body code {
+  @apply text-sm font-mono;
+}
+.markdown-body pre {
+  @apply bg-neutral-900 text-neutral-50 rounded-xl p-4 overflow-x-auto mb-4;
 }

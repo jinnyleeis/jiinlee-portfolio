@@ -3,6 +3,7 @@
 import type { Project } from "@/lib/types";
 import { createOrUpdateProject, deleteProjectAction } from "@/actions/projectActions";
 import { ProjectMarkdownEditor } from "./ProjectMarkdownEditor";
+import SummaryMarkdownEditor from "./SummaryMarkdownEditor";
 
 const TYPO_OPTIONS = [
   "heading-32_b",
@@ -167,15 +168,11 @@ export function AdminProjectForm({ project }: { project?: Project }) {
         />
       </label>
 
-      <label className="block space-y-1">
+      <div className="space-y-1">
         <span className="label-14_sb">Summary (Markdown)</span>
-        <textarea
-          name="summary"
-          rows={4}
-          defaultValue={project?.summary || ""}
-          className="w-full border border-border-soft rounded-lg px-2 py-1 body-14_r bg-cream"
-        />
-      </label>
+        <SummaryMarkdownEditor name="summary" defaultValue={project?.summary || ""} />
+        <p className="body-12_l text-gray-500">요약은 사이드바에 표시되며 Markdown (헤딩, 코드, 이미지, 콜아웃) 지원합니다.</p>
+      </div>
 
     <div className="space-y-1">
   <span className="label-14_sb">Body (Markdown, code blocks)</span>

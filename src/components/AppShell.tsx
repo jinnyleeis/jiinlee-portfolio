@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import type { Profile } from "@/lib/types";
 import { TocProvider, useToc } from "@/components/toc/TocContext";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 type Props = {
   children: React.ReactNode;
@@ -18,7 +19,7 @@ export function AppShell({ children, profile }: Props) {
         <main className="flex-1">
           <div className="max-w-9xl mx-auto px-4 py-10 flex gap-6">
             {/* 좌측 사이드바 영역 */}
-            <div className="hidden lg:block w-64 shrink-0">
+            <div className="hidden lg:block w-72 shrink-0">
               <Sidebar profile={profile} />
             </div>
 
@@ -84,8 +85,8 @@ function Sidebar({ profile }: { profile: Profile | null }) {
         {summary && (
           <div className="mb-3">
             <div className="label-14_md text-gray-500 mb-1">요약</div>
-            <div className="text-[13px] leading-relaxed whitespace-pre-wrap text-gray-700">
-              {summary}
+            <div className="text-[12px] leading-relaxed text-gray-700 max-h-56 overflow-y-auto rounded-lg border border-border-soft bg-white/70 px-2 py-2 [&_.markdown-h1]:text-sm [&_.markdown-h1]:mb-2 [&_.markdown-h2]:text-xs [&_.markdown-h2]:mb-1 [&_.markdown-callout]:mb-2 [&_.markdown-callout]:py-1 [&_.markdown-callout]:px-2">
+              <MarkdownRenderer value={summary} />
             </div>
             <div className="h-px bg-border-soft my-3" />
           </div>

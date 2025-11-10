@@ -3,39 +3,35 @@ import Image from "next/image";
 import type { Project } from "@/lib/types";
 import { getImageUrl } from "@/lib/supabase/storage";
 import { ProjectMetaTags } from "./ProjectMetaTags";
+import CardSummaryMarkdown from "./CardSummaryMarkdown";
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
       href={`/projects/${encodeURIComponent(project.slug)}`}
-      className="group hover-scale border border-border-soft rounded-2xl bg-white/70 hover:bg-white transition flex flex-col md:flex-row gap-4 p-4"
+      className="group hover-scale border border-border-soft rounded-2xl bg-white/70 hover:bg-white transition flex flex-col  gap-4 p-4"
     >
       {project.cover_image_path && (
-        <div className="relative w-full md:w-64 aspect-video rounded-xl bg-[#FFF1C9]">
+        <div className="relative w-full aspect-video rounded-xl bg-[#FFF1C9]">
           <Image
             src={getImageUrl(project.cover_image_path)}
             alt={project.title}
             fill
-            className="object-cover overflow-hidden"
+            className="object-cover object-center rounded-xl"
           />
         </div>
       )}
 
-      <div className="flex-1 flex flex-col gap-3">
-        <h2 className={`${project.title_typography || "heading-24_b"}`}>
+      <div className="flex-1 min-w-0 flex flex-col gap-2 ">
+        <h2 className={`${project.title_typography || "heading-24_b"} `}>
           {project.title}
         </h2>
         {project.subtitle && (
-          <p className={`${project.subtitle_typography || "title-16_sb"} text-gray-700`}>
+          <p className={`${project.subtitle_typography || "title-16_sb"} text-gray-700 `}>
             {project.subtitle}
           </p>
         )}
-        {project.summary && (
-          <p className="body-14_r text-gray-700 ">
-            {project.summary}
-          </p>
-        )}
-        <ProjectMetaTags
+         <ProjectMetaTags
           type_tags={project.type_tags}
           tech_stack_tags={project.tech_stack_tags}
           theme_tags={project.theme_tags}
@@ -43,6 +39,8 @@ export function ProjectCard({ project }: { project: Project }) {
           role_tags={project.role_tags}
           impact={project.impact}
         />
+        {project.summary && <CardSummaryMarkdown value={project.summary} />}
+       
       </div>
     </Link>
   );

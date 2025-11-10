@@ -2,6 +2,7 @@
 
 import type { Profile } from "@/lib/types";
 import { upsertProfile } from "@/actions/profileActions";
+import SummaryMarkdownEditor from "./SummaryMarkdownEditor";
 
 export function AdminProfileForm({ profile }: { profile: Profile | null }) {
   return (
@@ -64,25 +65,15 @@ export function AdminProfileForm({ profile }: { profile: Profile | null }) {
         </label>
       </div>
 
-      <label className="block space-y-1">
+      <div className="space-y-1">
         <span className="label-14_sb">Summary (Markdown)</span>
-        <textarea
-          name="summary"
-          rows={6}
-          defaultValue={profile?.summary || ""}
-          className="w-full border border-border-soft rounded-lg px-2 py-1 body-14_r bg-cream"
-        />
-      </label>
+        <SummaryMarkdownEditor name="summary" defaultValue={profile?.summary || ""} />
+      </div>
 
-      <label className="block space-y-1">
+      <div className="space-y-1">
         <span className="label-14_sb">Skills (Markdown)</span>
-        <textarea
-          name="skills"
-          rows={6}
-          defaultValue={profile?.skills || ""}
-          className="w-full border border-border-soft rounded-lg px-2 py-1 body-14_r bg-cream"
-        />
-      </label>
+        <SummaryMarkdownEditor name="skills" defaultValue={profile?.skills || ""} placeholder="핵심 스킬을 Markdown으로 정리하세요." />
+      </div>
 
       <button
         type="submit"

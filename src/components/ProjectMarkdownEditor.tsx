@@ -2,6 +2,8 @@
 
 import { useState, useMemo, useRef } from "react";
 import MarkdownRenderer from "./MarkdownRenderer";
+import { uploadFile } from "@/actions/storageActions";
+import { getImageUrl } from "@/lib/supabase/storage";
 
 const CALLOUT_PRESETS = [
   {
@@ -72,6 +74,7 @@ export function ProjectMarkdownEditor({
   const [activeTab, setActiveTab] = useState<"intro" | "main" | "outro">("intro");
   const activeRef = useRef<HTMLTextAreaElement | null>(null);
   const [selectedEmoji, setSelectedEmoji] = useState("💡");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const combined = useMemo(
     () =>
@@ -127,6 +130,35 @@ export function ProjectMarkdownEditor({
     handleInsertSnippet(selectedEmoji + " ");
   }
 
+  async function handleSelectImages(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    try {
+      const fd = new FormData();
+      files.forEach((f, idx) => fd.append(`file${idx}`, f));
+      const results: any[] = await uploadFile(fd);
+      const paths: string[] = results
+        .map((r: any) => (r?.path ? r.path : r?.data?.path))
+        .filter(Boolean);
+      if (paths.length === 0) return;
+
+      const snippets = paths
+        .map((p) => `![image](${getImageUrl(p)})`)
+        .join("\n\n");
+      handleInsertSnippet(snippets);
+    } catch (err) {
+      console.error(err);
+      alert("이미지 업로드에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
+  function triggerImagePicker() {
+    fileInputRef.current?.click();
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* 좌측: 편집 + TOC */}
@@ -170,6 +202,23 @@ export function ProjectMarkdownEditor({
             className="px-2 py-1 rounded-lg bg-[#E7F8E5] hover:bg-[#d1f2d0] text-xs"
           >
             📊 Table
+          </button>
+
+          {/* 이미지 업로드 */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleSelectImages}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={triggerImagePicker}
+            className="px-2 py-1 rounded-lg bg-[#E6F0FF] hover:bg-[#d6e7ff] text-xs"
+          >
+            🖼️ Image
           </button>
 
           {/* 이모티콘 선택 */}

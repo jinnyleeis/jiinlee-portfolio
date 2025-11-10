@@ -66,6 +66,17 @@ export function AdminProjectForm({ project }: { project?: Project }) {
         />
       </label>
 
+      <label className="block space-y-1">
+        <span className="label-14_sb">Link (optional)</span>
+        <input
+          name="link"
+          type="url"
+          defaultValue={project?.link || ""}
+          placeholder="https://example.com/demo 또는 https://github.com/user/repo"
+          className="w-full border border-border-soft rounded-lg px-2 py-1 body-14_r bg-cream"
+        />
+      </label>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <label className="block space-y-1">
           <span className="label-14_sb">Title Typography</span>

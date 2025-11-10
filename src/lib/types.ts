@@ -35,6 +35,7 @@ export type Project = {
   impact: string | null;
   role_tags: string[] | null;
   keywords: string[] | null;
+  link: string | null; // 프로젝트 외부 링크 (Demo / GitHub 등)
 
   title_typography: string | null;
   subtitle_typography: string | null;

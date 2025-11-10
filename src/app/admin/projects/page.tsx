@@ -15,7 +15,7 @@ export default async function AdminProjectsPage() {
     .order("sort_order", { ascending: true, nullsFirst: false })
     .order("id", { ascending: true });
   const projects = (data as Project[] | null) ?? [];
-  console.log(projects);
+  //console.log(projects);
 
   return (
     <div className="w-full px-6 py-10 space-y-6">

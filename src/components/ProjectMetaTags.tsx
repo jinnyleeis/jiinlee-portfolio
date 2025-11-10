@@ -1,3 +1,5 @@
+"use client";
+
 import { Tag } from "./Tag";
 
 type Props = {
@@ -7,6 +9,7 @@ type Props = {
   period?: string | null;
   role_tags?: string[] | null;
   impact?: string | null;
+  link?: string | null;
 };
 
 export function ProjectMetaTags({
@@ -16,6 +19,7 @@ export function ProjectMetaTags({
   period,
   role_tags,
   impact,
+  link,
 }: Props) {
   return (
     <div className="flex flex-col gap-3 body-14_r">
@@ -48,6 +52,29 @@ export function ProjectMetaTags({
           <div className="flex gap-2">
             <span className="label-14_sb text-gray-500">Role</span>
             <span className="body-16_r">{role_tags.join(" / ")}</span>
+          </div>
+        )}
+        {link && (
+          <div className="flex gap-2 sm:col-span-2">
+            <span className="label-14_sb text-gray-500">Link</span>
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="body-16_r text-accent-blue underline inline-flex items-center gap-1 max-w-full truncate"
+              title={link}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="truncate">{link.replace(/^https?:\/\//, "")}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 opacity-80"
+              >
+                <path d="M5 4a1 1 0 0 0-1 1v2a1 1 0 1 0 2 0V6h2a1 1 0 1 0 0-2H5Zm6 0a1 1 0 1 0 0 2h2v2a1 1 0 1 0 2 0V5a1 1 0 0 0-1-1h-3Zm-7 7a1 1 0 0 1 1 1v2h2a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Zm11 0a1 1 0 0 0-1 1v2h-2a1 1 0 1 0 0 2h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1Z" />
+              </svg>
+            </a>
           </div>
         )}
         {impact && (

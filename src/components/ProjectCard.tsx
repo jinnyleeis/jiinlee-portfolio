@@ -38,6 +38,7 @@ export function ProjectCard({ project }: { project: Project }) {
           period={project.period}
           role_tags={project.role_tags}
           impact={project.impact}
+          link={project.link}
         />
         {project.summary && <CardSummaryMarkdown value={project.summary} />}
        

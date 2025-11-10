@@ -54,6 +54,7 @@ export async function createOrUpdateProject(formData: FormData) {
   const summary = formData.get("summary")?.toString() || null;
   // const body = formData.get("body")?.toString() || null;
   const impact = formData.get("impact")?.toString() || null;
+  const link = formData.get("link")?.toString() || null;
 
   const type_tags = parseMultiSelect(formData.get("type_tags"));
   const tech_stack_tags = parseMultiSelect(formData.get("tech_stack_tags"));
@@ -92,6 +93,7 @@ export async function createOrUpdateProject(formData: FormData) {
     theme_tags,
     role_tags,
     keywords,
+  link,
     title_typography,
     subtitle_typography,
     body_typography,

@@ -8,7 +8,7 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
       href={`/projects/${encodeURIComponent(project.slug)}`}
-      className="group border border-border-soft rounded-2xl bg-white/70 hover:bg-white transition flex flex-col md:flex-row gap-4 p-4"
+      className="group hover-scale border border-border-soft rounded-2xl bg-white/70 hover:bg-white transition flex flex-col md:flex-row gap-4 p-4"
     >
       {project.cover_image_path && (
         <div className="relative w-full md:w-64 aspect-video rounded-xl bg-[#FFF1C9]">

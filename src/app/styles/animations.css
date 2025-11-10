@@ -1,0 +1,185 @@
+
+/*
+  
+
+      .animate-smooth   – 공통 전환 프리셋 (300 ms ease‑out)
+      .hover-scale      – Hover 시 1.03× 확대
+      .hover-scale-up   – Hover 시 1.05× 확대 (강조)
+      .press-scale      – Active 시 0.97× 축소 (버튼 피드백)
+      .hover-up         – Hover 시 Y축 −4 px 이동 (리프트)
+      .hover-fade       – Hover 시 투명도 0.7 페이드
+      .hover-pop        – Hover 시 [Scale 1.05 + 리프트 + Opacity 0.9]
+      .hover-brighten   – Hover 시 배경 / 아이콘 밝기 +5 % (filter)
+      .press-dim        – Active 시 배경 / 아이콘 밝기 −10 %
+      .interactive-card – 카드 전용: hover‑pop + press‑scale + 밝기 효과
+      .interactive-btn  – 버튼 전용: hover‑scale + hover-brighten + press‑scale + press‑dim
+
+      ※  복합 효과가 필요하면 여러 클래스를 공백으로 나열해 조합
+         예)  "interactive-card hover-fade".
+*/
+
+/* ---------------------------------------------------------------------- */
+/*  공통 전환 프리셋                                                        */
+/* ---------------------------------------------------------------------- */
+.animate-smooth {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms; /* 기본 0.3 초 */
+  transform-origin: center;
+  backface-visibility: hidden;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  1) Hover 시 살짝 확대                                                    */
+/* ---------------------------------------------------------------------- */
+.hover-scale {
+  transform: translateZ(0);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-scale:hover {
+  transform: scale(1.03);
+}
+
+/* 1‑A) 강조 확대 */
+.hover-scale-up {
+  transform: translateZ(0);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-scale-up:hover {
+  transform: scale(1.05);
+}
+
+/* ---------------------------------------------------------------------- */
+/*  2) Active 시 축소 (클릭 피드백)                                         */
+/* ---------------------------------------------------------------------- */
+.press-scale {
+  transform: translateZ(0);
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.press-scale:active {
+  transform: scale(0.97);
+}
+
+/* ---------------------------------------------------------------------- */
+/*  3) Hover 시 위로 4 px 리프트                                           */
+/* ---------------------------------------------------------------------- */
+.hover-up {
+  transform: translateY(0);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-up:hover {
+  transform: translateY(-4px);
+}
+
+/* ---------------------------------------------------------------------- */
+/*  4) Hover 시 투명도 감소 – 페이드                                      */
+/* ---------------------------------------------------------------------- */
+.hover-fade {
+  opacity: 1;
+  transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-fade:hover {
+  opacity: 0.7;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  5) 종합 효과 – Hover Pop (Scale + Lift + Opacity)                       */
+/* ---------------------------------------------------------------------- */
+.hover-pop {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-pop:hover {
+  transform: translateY(-4px) scale(1.05);
+  opacity: 0.9; /* dissolve ≈ 90% (원 요청: 약 50% → UX상 90%가 자연스러움) */
+  background-color: var(--color-grayscale-alpha-light-100);
+}
+.hover-pop:active {
+  background-color: var(--color-grayscale-alpha-dark-100);
+}
+
+/* ---------------------------------------------------------------------- */
+/*  6) 밝기 조절 – Hover & Active                                          */
+/* ---------------------------------------------------------------------- */
+/* 6‑A) Hover 시 밝기를 살짝 높임 */
+.hover-brighten {
+  transition: filter 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  filter: brightness(1);
+}
+.hover-brighten:hover {
+  filter: brightness(1.05);
+}
+
+/* 6‑B) Active 시 밝기를 낮춤 */
+.press-dim {
+  transition: filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.press-dim:active {
+  filter: brightness(0.9);
+}
+
+/* ---------------------------------------------------------------------- */
+/*  7) 프리셋 컴포넌트용 조합 클래스                                       */
+/* ---------------------------------------------------------------------- */
+/* 카드: Pop + Press‑Scale + 밝기 효과 */
+.interactive-card {
+  /* 기본 */
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  filter: brightness(1);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.interactive-card:hover {
+  transform: translateY(-4px) scale(1.05);
+  opacity: 0.9;
+  filter: brightness(1.05);
+}
+.interactive-card:active {
+  transform: translateY(-2px) scale(0.97); /* 눌렸을 때 살짝 축소 */
+  filter: brightness(0.9);
+}
+
+/* ---------------------------------------------------------------------- */
+/*  8) 버튼 전용 클래스                                                    */
+/* ---------------------------------------------------------------------- */
+.interactive-btn {
+  /* 배경 및 모서리 고정 */
+  border-radius: 12px;
+  /* 기본 transform/filter */
+  transform: translateZ(0) scale(1);
+  filter: brightness(1);
+  /* 트랜지션 통합 */
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    filter 150ms cubic-bezier(0.4, 0, 0.2, 1), background-color 200ms ease;
+}
+.interactive-btn:hover {
+  transform: scaleY(1.03);
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  background-color: var(--color-grayscale-alpha-light-100);
+}
+.interactive-btn:active {
+  background-color: var(--color-grayscale-alpha-dark-100);
+}
+
+/* ---------------------------------------------------------------------- */
+/*  9) 클릭 강조 스타일                                                   */
+/* ---------------------------------------------------------------------- */
+.click-highlight {
+  border: 1px solid var(--color-grayscale-scale-10, #fcfcfc);
+  background: var(--color-grayscale-alpha-light-500, rgba(255, 255, 255, 0.5));
+  border-radius: 30px;
+  /* 그림자가 border-radius를 완벽히 따르도록 inset + round 지정 */
+  clip-path: inset(0 round 30px);
+  /* 기존 그림자 */
+  box-shadow: 0 2px 20px rgba(10, 10, 101, 0.1);
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.click-highlight:hover {
+  background: var(--color-grayscale-alpha-light-300, rgba(255, 255, 255, 0.3));
+  transform: translateY(-2px);
+}

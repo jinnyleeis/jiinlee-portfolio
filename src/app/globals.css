@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./styles/animations.css";
+
+
 /* 기본 폰트 설정 */
 :root {
   --default-font-weight: 600;

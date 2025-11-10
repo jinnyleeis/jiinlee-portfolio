@@ -39,7 +39,7 @@ function Header() {
       <div className="max-w-9xl mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-accent-orange" />
-          <span className="title-20_sb">Jiin’s 포트폴리오</span>
+          <a href="/" className="title-20_sb hover:cursor-pointer">Jiin’s 포트폴리오</a>
         </div>
         <nav className="flex gap-4 label-14_sb">
           <a href="/" className="hover:underline">

@@ -1,7 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Profile, Project } from "@/lib/types";
-import { AdminProfileForm } from "@/components/AdminProfileForm";
-import { AdminProjectForm } from "@/components/AdminProjectForm";
 import { isAdmin, getSessionUser } from "@/lib/auth";
 import { signOut } from "@/actions/authActions";
 
@@ -43,25 +41,23 @@ export default async function AdminPage() {
   const projectList = (projects as Project[] | null) ?? [];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 space-y-8">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="heading-28_b">Admin Panel</h1>
+    <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="heading-28_b">Admin Dashboard</h1>
         <form action={signOut}>
           <button className="px-3 py-1 rounded-lg bg-neutral-800 text-white label-14_sb" type="submit">로그아웃</button>
         </form>
       </div>
-
-      <AdminProfileForm profile={profile} />
-
-      <section className="space-y-4">
-        <h2 className="title-20_sb">Projects</h2>
-        <AdminProjectForm />
-        <div className="grid gap-4 md:grid-cols-2">
-          {projectList.map((p) => (
-            <AdminProjectForm key={p.id} project={p} />
-          ))}
-        </div>
-      </section>
+      <div className="grid gap-4 md:grid-cols-2">
+        <a href="/admin/profile" className="border border-border-soft rounded-xl p-4 bg-white/80 hover:bg-white transition flex flex-col gap-2">
+          <h2 className="title-20_sb">Profile 관리</h2>
+          <p className="body-14_r text-gray-600">개인 프로필 정보 및 소개/스킬 마크다운 수정</p>
+        </a>
+        <a href="/admin/projects" className="border border-border-soft rounded-xl p-4 bg-white/80 hover:bg-white transition flex flex-col gap-2">
+          <h2 className="title-20_sb">Projects 관리</h2>
+          <p className="body-14_r text-gray-600">프로젝트 생성 · 편집 · 순서 정렬</p>
+        </a>
+      </div>
     </div>
   );
 }

@@ -54,6 +54,9 @@ export async function createOrUpdateProject(formData: FormData) {
   const subtitle_typography = formData.get("subtitle_typography")?.toString() || "title-20_sb";
   const body_typography = formData.get("body_typography")?.toString() || "body-16_r";
 
+  const sort_order_raw = formData.get("sort_order")?.toString() || null;
+  const sort_order = sort_order_raw ? Number(sort_order_raw) : null;
+
   const file = formData.get("cover_image") as File | null;
   let cover_image_path = formData.get("cover_image_path")?.toString() || null;
 
@@ -79,24 +82,24 @@ export async function createOrUpdateProject(formData: FormData) {
     subtitle_typography,
     body_typography,
     cover_image_path,
+    sort_order,
   };
 
   // update vs insert: id가 있으면 id로 update, 없으면 insert
-  let error: any = null;
-  if (id) {
-    const { error: upErr } = await supabase
-      .from("projects")
-      .update(payload)
-      .eq("id", id);
-    error = upErr;
-  } else {
-    const { error: insErr } = await supabase.from("projects").insert(payload);
-    error = insErr;
+  async function doWrite(data: typeof payload) {
+    if (id) {
+      return supabase.from("projects").update(data).eq("id", id);
+    }
+    return supabase.from("projects").insert(data);
   }
 
+  let { error } = await doWrite(payload);
+
   if (error) {
-    console.error(error);
-    throw error;
+    console.error("createOrUpdateProject error", error);
+    const msg = (error && (error.message || error.details || error.hint)) || "Project save failed";
+    const code = error && error.code ? ` [${error.code}]` : "";
+    throw new Error(`${msg}${code}`);
   }
 
   revalidatePath("/");
@@ -112,8 +115,10 @@ export async function deleteProject(id: string) {
   const { error } = await supabase.from("projects").delete().eq("id", id);
 
   if (error) {
-    console.error(error);
-    throw error;
+    console.error("deleteProject error", error);
+    const msg = (error && (error.message || error.details || error.hint)) || "Project delete failed";
+    const code = error && error.code ? ` [${error.code}]` : "";
+    throw new Error(`${msg}${code}`);
   }
 
   revalidatePath("/");
@@ -125,4 +130,42 @@ export async function deleteProjectAction(formData: FormData) {
   const id = formData.get("id")?.toString();
   if (!id) return;
   await deleteProject(id);
+}
+
+// 다중 프로젝트 정렬 업데이트 액션
+export async function updateProjectOrder(formData: FormData) {
+  const supabase = await createServerSupabaseAdminClient();
+  const entriesRaw = formData.getAll("order_item"); // JSON 문자열 배열 기대
+  const updates: { id: string; sort_order: number }[] = [];
+  for (const raw of entriesRaw) {
+    try {
+      const parsed = JSON.parse(raw.toString());
+      if (parsed && parsed.id && typeof parsed.sort_order === "number") {
+        updates.push({ id: parsed.id, sort_order: parsed.sort_order });
+      }
+    } catch (e) {
+      console.error("updateProjectOrder parse error", e);
+    }
+  }
+  if (updates.length === 0) return;
+  // upsert는 고유 제약이 없으면 insert가 발생해 NOT NULL 에러 유발 가능
+  // 안전하게 id별 개별 update로 처리
+  const results = await Promise.all(
+    updates.map((u) =>
+      supabase
+        .from("projects")
+        .update({ sort_order: u.sort_order })
+        .eq("id", u.id)
+    )
+  );
+  const firstErr = results.find((r) => r.error)?.error;
+  if (firstErr) {
+   
+    console.error("updateProjectOrder error", firstErr);
+    const msg = (firstErr && (firstErr.message || firstErr.details || firstErr.hint)) || "Order update failed";
+    const code = firstErr && firstErr.code ? ` [${firstErr.code}]` : "";
+    throw new Error(`${msg}${code}`);
+  }
+  revalidatePath("/");
+  revalidatePath("/admin/projects");
 }

@@ -53,7 +53,7 @@ export function ProjectMetaTags({
         {impact && (
           <div className="flex gap-2 sm:col-span-2">
             <span className="label-14_sb text-gray-500">Impact</span>
-            <span className="body-16_r">{impact}</span>
+            <span className="body-16_r whitespace-pre-wrap break-words">{impact}</span>
           </div>
         )}
       </div>

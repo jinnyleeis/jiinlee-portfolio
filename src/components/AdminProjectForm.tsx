@@ -150,7 +150,7 @@ export function AdminProjectForm({ project }: { project?: Project }) {
 
       <label className="block space-y-1">
         <span className="label-14_sb">Impact</span>
-        <input
+        <textarea
           name="impact"
           defaultValue={project?.impact || ""}
           placeholder="Processing time ↓75%, Consistency ↑100%, Dirty Data 0건"

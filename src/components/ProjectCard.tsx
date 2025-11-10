@@ -16,7 +16,7 @@ export function ProjectCard({ project }: { project: Project }) {
             src={getImageUrl(project.cover_image_path)}
             alt={project.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300 overflow-hidden"
+            className="object-cover overflow-hidden"
           />
         </div>
       )}

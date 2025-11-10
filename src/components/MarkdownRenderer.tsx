@@ -557,7 +557,7 @@ function Lightbox({
       </button>
       {/* 전체 영역 클릭 시 닫기 */}
       <div
-        className="cursor-zoom-out w-full mx-auto flex items-center justify-center"
+        className="cursor-zoom-out w-full mx-auto flex items-center justify-center shadow-2xl rounded-lg"
         onClick={onClose}
       >
         {content.kind === "img" ? (
@@ -569,7 +569,7 @@ function Lightbox({
           />
         ) : (
           <div
-            className="w-full flex items-center justify-center [&>svg]:max-h-[1000px] [&>svg]:max-w-full [&>svg]:mx-auto overflow-auto [&>svg]:min-w-[700px] "
+            className="w-full flex items-center justify-center [&>svg]:max-h-[1000px] [&>svg]:max-w-full  [&>svg]:mx-auto overflow-auto [&>svg]:min-w-[700px] "
             dangerouslySetInnerHTML={{ __html: content.svg }}
           />
         )}

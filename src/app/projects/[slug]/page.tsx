@@ -3,8 +3,8 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Project } from "@/lib/types";
 import { getImageUrl } from "@/lib/supabase/storage";
 import Image from "next/image";
-import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { ProjectMetaTags } from "@/components/ProjectMetaTags";
+import { ProjectBodyWithToc } from "@/components/ProjectBodyWithToc";
 
 type Props = {
   params: { slug: string };
@@ -15,29 +15,35 @@ export default async function ProjectDetailPage({ params }: Props) {
   const { data, error } = await supabase
     .from("projects")
     .select("*")
-  .eq("slug", decodeURIComponent(params.slug))
+    .eq("slug", decodeURIComponent(params.slug))
     .single();
 
   if (error || !data) return notFound();
 
   const project = data as Project;
 
-// project.body 대신, 섹션 기준으로 통합 (기존 body 있으면 fallback)
-const fullBody =
-  project.body ||
-  [project.body_intro, project.body_main, project.body_outro]
-    .filter((s) => s && s.trim().length > 0)
-    .join("\n\n---\n\n");
-
+  // body_intro/body_main/body_outro를 이미 쓰고 있다면 여기서 합치고,
+  // 아니면 그냥 project.body만 사용해도 OK
+  const fullBody =
+    (project as any).body_intro || (project as any).body_main || (project as any).body_outro
+      ? [ (project as any).body_intro, (project as any).body_main, (project as any).body_outro ]
+          .map((s: string | null) => (s || "").trim())
+          .filter(Boolean)
+          .join("\n\n---\n\n")
+      : project.body || "";
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
+    <div className="space-y-6">
       <header className="space-y-3">
         <h1 className={`${project.title_typography || "heading-32_b"}`}>
           {project.title}
         </h1>
         {project.subtitle && (
-          <p className={`${project.subtitle_typography || "title-20_sb"} text-gray-700`}>
+          <p
+            className={`${
+              project.subtitle_typography || "title-20_sb"
+            } text-gray-700`}
+          >
             {project.subtitle}
           </p>
         )}
@@ -64,16 +70,19 @@ const fullBody =
 
       {project.summary && (
         <section className="bg-white/80 rounded-2xl border border-border-soft p-4">
-          <MarkdownRenderer value={project.summary} />
+          <div className="markdown-body">
+            <p className="body-16_r whitespace-pre-wrap">
+              {project.summary}
+            </p>
+          </div>
         </section>
       )}
 
-{fullBody && (
-  <section className="bg-white/90 rounded-2xl border border-border-soft p-5">
-    <MarkdownRenderer value={fullBody} />
-  </section>
-)}
-
+      {fullBody && (
+        <section className="bg-white/90 rounded-2xl border border-border-soft p-5">
+          <ProjectBodyWithToc markdown={fullBody} />
+        </section>
+      )}
     </div>
   );
 }

@@ -11,12 +11,12 @@ export function ProjectCard({ project }: { project: Project }) {
       className="group border border-border-soft rounded-2xl bg-white/70 hover:bg-white transition flex flex-col md:flex-row gap-4 p-4"
     >
       {project.cover_image_path && (
-        <div className="relative w-full md:w-64 aspect-video rounded-xl overflow-hidden bg-[#FFF1C9]">
+        <div className="relative w-full md:w-64 aspect-video rounded-xl bg-[#FFF1C9]">
           <Image
             src={getImageUrl(project.cover_image_path)}
             alt={project.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover group-hover:scale-105 transition-transform duration-300 overflow-hidden"
           />
         </div>
       )}
@@ -31,7 +31,7 @@ export function ProjectCard({ project }: { project: Project }) {
           </p>
         )}
         {project.summary && (
-          <p className="body-14_r text-gray-700 line-clamp-3">
+          <p className="body-14_r text-gray-700 ">
             {project.summary}
           </p>
         )}

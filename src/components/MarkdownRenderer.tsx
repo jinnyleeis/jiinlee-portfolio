@@ -557,7 +557,7 @@ function Lightbox({
       </button>
       {/* 전체 영역 클릭 시 닫기 */}
       <div
-        className="cursor-zoom-out w-full mx-auto flex items-center justify-center shadow-2xl rounded-lg"
+        className="cursor-zoom-out w-[80%] mx-auto flex items-center justify-center shadow-2xl rounded-lg"
         onClick={onClose}
       >
         {content.kind === "img" ? (

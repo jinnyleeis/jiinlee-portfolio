@@ -57,13 +57,16 @@ export function ProjectMetaTags({
         {link && (
           <div className="flex gap-2 sm:col-span-2">
             <span className="label-14_sb text-gray-500">Link</span>
-            <a
-              href={link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="body-16_r text-accent-blue underline inline-flex items-center gap-1 max-w-full truncate"
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                try {
+                  window.open(link, "_blank", "noopener,noreferrer");
+                } catch (_) {}
+              }}
               title={link}
-              onClick={(e) => e.stopPropagation()}
+              className="body-16_r text-accent-blue underline inline-flex items-center gap-1 max-w-full truncate"
             >
               <span className="truncate">{link.replace(/^https?:\/\//, "")}</span>
               <svg
@@ -74,7 +77,7 @@ export function ProjectMetaTags({
               >
                 <path d="M5 4a1 1 0 0 0-1 1v2a1 1 0 1 0 2 0V6h2a1 1 0 1 0 0-2H5Zm6 0a1 1 0 1 0 0 2h2v2a1 1 0 1 0 2 0V5a1 1 0 0 0-1-1h-3Zm-7 7a1 1 0 0 1 1 1v2h2a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Zm11 0a1 1 0 0 0-1 1v2h-2a1 1 0 1 0 0 2h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1Z" />
               </svg>
-            </a>
+            </button>
           </div>
         )}
         {impact && (

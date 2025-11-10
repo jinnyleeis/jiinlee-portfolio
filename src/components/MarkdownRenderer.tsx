@@ -527,6 +527,15 @@ function Lightbox({
 }) {
   if (typeof window === "undefined") return null;
 
+  // 화면 잠금 (배경 스크롤 방지)
+  React.useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, []);
+
   return createPortal(
     <div
       className={clsx(
@@ -546,18 +555,21 @@ function Lightbox({
       >
         테마: {theme === "dark" ? "Dark" : "Light"}
       </button>
-
-      <div className="cursor-zoom-out" onClick={onClose}>
+      {/* 전체 영역 클릭 시 닫기 */}
+      <div
+        className="cursor-zoom-out w-full mx-auto flex items-center justify-center"
+        onClick={onClose}
+      >
         {content.kind === "img" ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={content.src}
             alt={content.alt || "preview"}
-            className="max-w-[95vw] max-h-[95vh] object-contain rounded-lg shadow-2xl"
+            className=" object-contain rounded-lg shadow-2xl"
           />
         ) : (
           <div
-            className="max-w-[95vw] max-h-[95vh] [&>svg]:w-full [&>svg]:h-auto"
+            className="w-full flex items-center justify-center [&>svg]:max-h-[1000px] [&>svg]:max-w-full [&>svg]:mx-auto overflow-auto [&>svg]:min-w-[700px] "
             dangerouslySetInnerHTML={{ __html: content.svg }}
           />
         )}

@@ -25,7 +25,7 @@ export default async function EditProjectPage({ params }: Props) {
   const project = data as Project;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
+    <div className="w-full px-6 py-10 space-y-6">
       <h1 className="heading-24_b">프로젝트 편집</h1>
       <AdminProjectForm project={project} />
     </div>

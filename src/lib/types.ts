@@ -19,6 +19,11 @@ export type Project = {
   period: string | null;
   summary: string | null; // 상단 요약 (Markdown)
   body: string | null;    // 본문 (Markdown, 코드블록 포함)
+
+  body_intro: string | null;
+  body_main: string | null;
+  body_outro: string | null;
+
   cover_image_path: string | null;
 
   // 정렬용

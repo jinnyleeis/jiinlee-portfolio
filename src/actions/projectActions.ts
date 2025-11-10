@@ -34,6 +34,17 @@ function parseMultiSelect(value: FormDataEntryValue | null) {
 export async function createOrUpdateProject(formData: FormData) {
   const supabase = await createServerSupabaseAdminClient();
 
+    // 섹션별 본문
+  const body_intro = formData.get("body_intro")?.toString() || "";
+  const body_main  = formData.get("body_main")?.toString() || "";
+  const body_outro = formData.get("body_outro")?.toString() || "";
+
+   // 기존 body는 섹션들을 합쳐서 저장 
+  const bodySections = [body_intro, body_main, body_outro]
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const body = bodySections.join("\n\n---\n\n");
+
   const id = formData.get("id")?.toString() || undefined;
   const original_slug = formData.get("original_slug")?.toString() || null;
   const slug = formData.get("slug")?.toString() || "";
@@ -41,7 +52,7 @@ export async function createOrUpdateProject(formData: FormData) {
   const subtitle = formData.get("subtitle")?.toString() || null;
   const period = formData.get("period")?.toString() || null;
   const summary = formData.get("summary")?.toString() || null;
-  const body = formData.get("body")?.toString() || null;
+  // const body = formData.get("body")?.toString() || null;
   const impact = formData.get("impact")?.toString() || null;
 
   const type_tags = parseMultiSelect(formData.get("type_tags"));
@@ -72,6 +83,9 @@ export async function createOrUpdateProject(formData: FormData) {
     period,
     summary,
     body,
+    body_intro,
+    body_main,
+    body_outro,
     impact,
     type_tags,
     tech_stack_tags,

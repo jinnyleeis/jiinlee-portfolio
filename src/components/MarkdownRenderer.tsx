@@ -5,6 +5,22 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import clsx from "clsx";
 
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9가-힣\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+function extractText(node: React.ReactNode): string {
+  if (typeof node === "string") return node;
+  if (Array.isArray(node)) return node.map(extractText).join("");
+  if (React.isValidElement(node)) return extractText(node.props.children);
+  return "";
+}
+
+
 // Mermaid는 동적 로딩 (SSR 번들 단계에서 window 접근 회피)
 let mermaidPromise: Promise<any> | null = null;
 function getMermaid() {
@@ -36,9 +52,52 @@ export default function MarkdownRenderer({ value }: { value: string }) {
   return (
     <div className="markdown-body">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={{
-          // 블록 코드: 여기서 pre를 직접 렌더링해 mermaid와 일반 코드블록을 완전히 분리
+  remarkPlugins={[remarkGfm]}
+  components={{
+    h1: ({ children }) => {
+      const text = extractText(children);
+      const id = slugify(text);
+      return (
+        <h1 id={id} className="markdown-h1">
+          {children}
+        </h1>
+      );
+    },
+    h2: ({ children }) => {
+      const text = extractText(children);
+      const id = slugify(text);
+      return (
+        <h2 id={id} className="markdown-h2">
+          {children}
+        </h2>
+      );
+    },
+    blockquote: ({ children }) => {
+      const text = extractText(children);
+      let variant: "problem" | "design" | "impl" | "result" | "reflection" | null = null;
+
+      if (text.includes("⚠️")) variant = "problem";
+      else if (text.includes("🧩")) variant = "design";
+      else if (text.includes("⚙️")) variant = "impl";
+      else if (text.includes("✅")) variant = "result";
+      else if (text.includes("🧠")) variant = "reflection";
+
+      const base = "markdown-callout";
+      const extra =
+        variant === "problem"
+          ? "markdown-callout-problem"
+          : variant === "design"
+          ? "markdown-callout-design"
+          : variant === "impl"
+          ? "markdown-callout-impl"
+          : variant === "result"
+          ? "markdown-callout-result"
+          : variant === "reflection"
+          ? "markdown-callout-reflection"
+          : "";
+
+      return <blockquote className={`${base} ${extra}`}>{children}</blockquote>;
+    },
           pre: ((props: any) => {
             const child: any = Array.isArray(props.children)
               ? props.children[0]
@@ -256,7 +315,7 @@ function CodeBlock({
     }
   };
 
-  
+
   return (
     <div className="group relative bg-[#111] rounded-xl">
       <button

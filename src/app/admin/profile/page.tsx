@@ -12,7 +12,7 @@ export default async function AdminProfilePage() {
   const { data } = await supabase.from("profiles").select("*").limit(1);
   const profile = (data?.[0] as Profile | undefined) ?? null;
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
+    <div className="w-full px-6 py-10 space-y-6">
       <h1 className="heading-24_b">Profile 관리</h1>
       <AdminProfileForm profile={profile} />
     </div>

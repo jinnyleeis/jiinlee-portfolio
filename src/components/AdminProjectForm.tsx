@@ -2,6 +2,7 @@
 
 import type { Project } from "@/lib/types";
 import { createOrUpdateProject, deleteProjectAction } from "@/actions/projectActions";
+import { ProjectMarkdownEditor } from "./ProjectMarkdownEditor";
 
 const TYPO_OPTIONS = [
   "heading-32_b",
@@ -176,18 +177,18 @@ export function AdminProjectForm({ project }: { project?: Project }) {
         />
       </label>
 
-      <label className="block space-y-1">
-        <span className="label-14_sb">Body (Markdown, code blocks)</span>
-        <textarea
-          name="body"
-          rows={12}
-          defaultValue={project?.body || ""}
-          className="w-full border border-border-soft rounded-lg px-2 py-1 body-14_r bg-cream"
-        />
-        <p className="body-13_l text-gray-500">
-          ```sql 같은 코드블록 문법 그대로 사용하면 상세 페이지에서 하이라이트됩니다.
-        </p>
-      </label>
+    <div className="space-y-1">
+  <span className="label-14_sb">Body (Markdown, code blocks)</span>
+  <ProjectMarkdownEditor
+    defaultIntro={project?.body_intro || ""}
+    defaultMain={project?.body_main || project?.body || ""}  // 기존 body는 본문으로
+    defaultOutro={project?.body_outro || ""}
+  />
+  <p className="body-13_l text-gray-500 mt-1">
+    ```sql, ```python 등 코드블록 문법 그대로 사용하면 상세 페이지에서 하이라이트됩니다.
+  </p>
+</div>
+
 
       {/* 이미지 업로드 */}
       <input

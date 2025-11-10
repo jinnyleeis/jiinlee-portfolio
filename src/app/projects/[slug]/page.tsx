@@ -22,6 +22,14 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const project = data as Project;
 
+// project.body 대신, 섹션 기준으로 통합 (기존 body 있으면 fallback)
+const fullBody =
+  project.body ||
+  [project.body_intro, project.body_main, project.body_outro]
+    .filter((s) => s && s.trim().length > 0)
+    .join("\n\n---\n\n");
+
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
       <header className="space-y-3">
@@ -60,11 +68,12 @@ export default async function ProjectDetailPage({ params }: Props) {
         </section>
       )}
 
-      {project.body && (
-        <section className="bg-white/90 rounded-2xl border border-border-soft p-5">
-          <MarkdownRenderer value={project.body} />
-        </section>
-      )}
+{fullBody && (
+  <section className="bg-white/90 rounded-2xl border border-border-soft p-5">
+    <MarkdownRenderer value={fullBody} />
+  </section>
+)}
+
     </div>
   );
 }

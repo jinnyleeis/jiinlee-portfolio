@@ -18,7 +18,7 @@ export default async function AdminProjectsPage() {
   console.log(projects);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 space-y-6">
+    <div className="w-full px-6 py-10 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="heading-24_b">Projects 관리</h1>
         <Link

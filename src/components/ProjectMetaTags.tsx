@@ -40,20 +40,20 @@ export function ProjectMetaTags({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 rounded-xl border border-border-soft bg-white/60 p-3">
         {period && (
           <div className="flex gap-2">
-            <span className="label-12_sb text-gray-500">Period</span>
-            <span className="body-14_r">{period}</span>
+            <span className="label-14_sb text-gray-500">Period</span>
+            <span className="body-16_r">{period}</span>
           </div>
         )}
         {role_tags && role_tags.length > 0 && (
           <div className="flex gap-2">
-            <span className="label-12_sb text-gray-500">Role</span>
-            <span className="body-14_r">{role_tags.join(" / ")}</span>
+            <span className="label-14_sb text-gray-500">Role</span>
+            <span className="body-16_r">{role_tags.join(" / ")}</span>
           </div>
         )}
         {impact && (
           <div className="flex gap-2 sm:col-span-2">
-            <span className="label-12_sb text-gray-500">Impact</span>
-            <span className="body-14_r">{impact}</span>
+            <span className="label-14_sb text-gray-500">Impact</span>
+            <span className="body-16_r">{impact}</span>
           </div>
         )}
       </div>

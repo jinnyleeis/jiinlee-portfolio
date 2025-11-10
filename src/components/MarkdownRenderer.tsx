@@ -1,9 +1,15 @@
 "use client";
 
 import React from "react";
+import { createPortal } from "react-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import clsx from "clsx";
+
+/** 라이트박스에 띄울 컨텐츠 타입 */
+type LightboxContent =
+  | { kind: "img"; src: string; alt?: string }
+  | { kind: "svg"; svg: string; alt?: string };
 
 function slugify(text: string) {
   return text
@@ -20,13 +26,15 @@ function extractText(node: React.ReactNode): string {
   return "";
 }
 
+/* ===================== */
+/*  mermaid / highlight  */
+/* ===================== */
 
-// Mermaid는 동적 로딩 (SSR 번들 단계에서 window 접근 회피)
+// Mermaid 동적 로딩
 let mermaidPromise: Promise<any> | null = null;
 function getMermaid() {
   if (!mermaidPromise) {
     mermaidPromise = import("mermaid").then((m) => {
-      // 전역 기본값: handDrawn 룩 적용 (다이어그램별 init directive가 있으면 그 값이 우선)
       m.default.initialize({
         startOnLoad: false,
         look: "handDrawn",
@@ -48,56 +56,126 @@ function getHLJS() {
   return hljsPromise;
 }
 
+/* ===================== */
+/*   메인 컴포넌트       */
+/* ===================== */
+
 export default function MarkdownRenderer({ value }: { value: string }) {
+  const [lightbox, setLightbox] = React.useState<LightboxContent | null>(null);
+  const [theme, setTheme] = React.useState<"dark" | "light">("light");
+
+  // CoverZoom 등 외부에서 이미지 열기용 이벤트 리스너
+  React.useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ src?: string }>).detail;
+      if (!detail?.src) return;
+      setLightbox({ kind: "img", src: detail.src });
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("open-lightbox-external", handler as EventListener);
+      return () =>
+        window.removeEventListener(
+          "open-lightbox-external",
+          handler as EventListener
+        );
+    }
+  }, []);
+
+  // ESC 등 키보드 처리
+  React.useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightbox(null);
+      else if (e.key.toLowerCase() === "t") {
+        setTheme((t) => (t === "dark" ? "light" : "dark"));
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightbox]);
+
+  const openImage = React.useCallback((src: string, alt?: string) => {
+    setLightbox({ kind: "img", src, alt });
+  }, []);
+
+  const openSvg = React.useCallback((svg: string) => {
+    if (!svg) return;
+    setLightbox({ kind: "svg", svg });
+  }, []);
+
+  const closeLightbox = React.useCallback(() => setLightbox(null), []);
+
   return (
     <div className="markdown-body">
       <ReactMarkdown
-  remarkPlugins={[remarkGfm]}
-  components={{
-    h1: ({ children }) => {
-      const text = extractText(children);
-      const id = slugify(text);
-      return (
-        <h1 id={id} className="markdown-h1">
-          {children}
-        </h1>
-      );
-    },
-    h2: ({ children }) => {
-      const text = extractText(children);
-      const id = slugify(text);
-      return (
-        <h2 id={id} className="markdown-h2">
-          {children}
-        </h2>
-      );
-    },
-    blockquote: ({ children }) => {
-      const text = extractText(children);
-      let variant: "problem" | "design" | "impl" | "result" | "reflection" | null = null;
+        remarkPlugins={[remarkGfm]}
+        components={{
+          img: ({ src, alt }) => {
+            const s = typeof src === "string" ? src : "";
+            return (
+              <ZoomableThumb onOpen={() => openImage(s, alt)}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={s}
+                  alt={alt || ""}
+                  className="max-w-full h-auto rounded-lg"
+                />
+              </ZoomableThumb>
+            );
+          },
+          h1: ({ children }) => {
+            const text = extractText(children);
+            const id = slugify(text);
+            return (
+              <h1 id={id} className="markdown-h1">
+                {children}
+              </h1>
+            );
+          },
+          h2: ({ children }) => {
+            const text = extractText(children);
+            const id = slugify(text);
+            return (
+              <h2 id={id} className="markdown-h2">
+                {children}
+              </h2>
+            );
+          },
+          blockquote: ({ children }) => {
+            const text = extractText(children);
+            let variant:
+              | "problem"
+              | "design"
+              | "impl"
+              | "result"
+              | "reflection"
+              | null = null;
 
-      if (text.includes("⚠️")) variant = "problem";
-      else if (text.includes("🧩")) variant = "design";
-      else if (text.includes("⚙️")) variant = "impl";
-      else if (text.includes("✅")) variant = "result";
-      else if (text.includes("🧠")) variant = "reflection";
+            if (text.includes("⚠️")) variant = "problem";
+            else if (text.includes("🧩")) variant = "design";
+            else if (text.includes("⚙️")) variant = "impl";
+            else if (text.includes("✅")) variant = "result";
+            else if (text.includes("🧠")) variant = "reflection";
 
-      const base = "markdown-callout";
-      const extra =
-        variant === "problem"
-          ? "markdown-callout-problem"
-          : variant === "design"
-          ? "markdown-callout-design"
-          : variant === "impl"
-          ? "markdown-callout-impl"
-          : variant === "result"
-          ? "markdown-callout-result"
-          : variant === "reflection"
-          ? "markdown-callout-reflection"
-          : "";
+            const base = "markdown-callout";
+            const extra =
+              variant === "problem"
+                ? "markdown-callout-problem"
+                : variant === "design"
+                ? "markdown-callout-design"
+                : variant === "impl"
+                ? "markdown-callout-impl"
+                : variant === "result"
+                ? "markdown-callout-result"
+                : variant === "reflection"
+                ? "markdown-callout-reflection"
+                : "";
 
-      return <blockquote className={`${base} ${extra}`}>{children}</blockquote>;
-    },
+            return (
+              <blockquote className={`${base} ${extra}`}>{children}</blockquote>
+            );
+          },
           pre: ((props: any) => {
             const child: any = Array.isArray(props.children)
               ? props.children[0]
@@ -108,9 +186,11 @@ export default function MarkdownRenderer({ value }: { value: string }) {
             const lang = langMatch?.[1];
 
             if (lang === "mermaid") {
-              return <MermaidDiagram code={raw} />;
+              return <MermaidDiagram code={raw} onOpen={openSvg} />;
             }
-            return <CodeBlock raw={raw} language={lang} className={className} />;
+            return (
+              <CodeBlock raw={raw} language={lang} className={className} />
+            );
           }) as React.ComponentType<any>,
           code: ((args: any) => {
             const { inline, className, children, ...props } = args as {
@@ -121,29 +201,49 @@ export default function MarkdownRenderer({ value }: { value: string }) {
 
             if (inline) {
               return (
-                <code
-                  className={className}
-                  {...props}
-                >
+                <code className={className} {...props}>
                   {children}
                 </code>
               );
             }
-            // 블록 코드는 위의 pre 컴포넌트가 처리
+            // 블록 코드는 pre에서 처리
             return null as any;
           }) as React.ComponentType<any>,
         }}
       >
         {value}
       </ReactMarkdown>
+
+      {lightbox && (
+        <Lightbox
+          content={lightbox}
+          theme={theme}
+          onClose={closeLightbox}
+          onToggleTheme={() =>
+            setTheme((t) => (t === "dark" ? "light" : "dark"))
+          }
+        />
+      )}
     </div>
   );
 }
 
-function MermaidDiagram({ code }: { code: string }) {
+/* ===================== */
+/*   Mermaid Diagram     */
+/* ===================== */
+
+function MermaidDiagram({
+  code,
+  onOpen,
+}: {
+  code: string;
+  onOpen?: (svg: string) => void;
+}) {
   const id = React.useId().replace(/:/g, "_");
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const svgCache = React.useRef<string>("");
+
   React.useEffect(() => {
     if (!ref.current) return;
     let active = true;
@@ -154,12 +254,14 @@ function MermaidDiagram({ code }: { code: string }) {
         const { svg } = await mermaid.render(id, processed);
         if (active && ref.current) {
           ref.current.innerHTML = svg;
-          const svgEl = ref.current.querySelector('svg') as SVGElement | null;
+          svgCache.current = svg;
+          const svgEl = ref.current.querySelector(
+            "svg"
+          ) as SVGElement | null;
           if (svgEl) {
-            svgEl.style.maxWidth = '100%';
-            svgEl.style.maxHeight = '500px';
-            // mermaid가 내부에 배경을 넣는 경우 투명화 시도
-            (svgEl.style as any).background = 'transparent';
+            svgEl.style.maxWidth = "100%";
+            svgEl.style.maxHeight = "500px";
+            (svgEl.style as any).background = "transparent";
           }
         }
       } catch (e: any) {
@@ -174,11 +276,29 @@ function MermaidDiagram({ code }: { code: string }) {
 
   return (
     <figure className="my-6">
-      <div className="rounded-xl border border-border-soft bg-white/70 backdrop-blur-sm p-4 shadow-sm">
+      <div
+        className="group relative rounded-xl border border-border-soft bg-white/70 backdrop-blur-sm p-4 shadow-sm cursor-zoom-in"
+        onClick={() => svgCache.current && onOpen?.(svgCache.current)}
+      >
         {error ? (
-          <pre className="text-red-600 text-sm whitespace-pre-wrap">Mermaid Error: {error}\n{code}</pre>
+          <pre className="text-red-600 text-sm whitespace-pre-wrap">
+            Mermaid Error: {error}
+            {"\n"}
+            {code}
+          </pre>
         ) : (
-          <div ref={ref} className="mermaid" aria-label="Mermaid diagram" />
+          <>
+            <div
+              ref={ref}
+              className="mermaid"
+              aria-label="Mermaid diagram"
+            />
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="rounded-full bg-black/60 text-white px-3 py-1 text-xs">
+                클릭하여 확대
+              </span>
+            </div>
+          </>
         )}
       </div>
       <figcaption className="sr-only">Mermaid diagram</figcaption>
@@ -186,23 +306,24 @@ function MermaidDiagram({ code }: { code: string }) {
   );
 }
 
-// --- Helpers ---
-// Markdown의 YAML frontmatter(--- ... ---) 안에 config.look, config.theme 등을 지원하고,
-// 없는 경우에도 handDrawn 룩을 기본으로 적용하기 위해 init directive를 주입한다.
+/* ===================== */
+/*   Mermaid helper      */
+/* ===================== */
+
 function preprocessMermaidCode(src: string): string {
   const trimmed = src.trimStart();
-  // 1) 이미 handDrawn 룩을 명시한 init 지시문이 있다면 그대로 반환
-  if (/%%\{\s*init:[^}]*"look"\s*:\s*"handDrawn"/m.test(trimmed)) {
+  if (
+    /%%\{\s*init:[^}]*"look"\s*:\s*"handDrawn"/m.test(trimmed)
+  ) {
     return src;
   }
 
-  // 2) 기존 init 지시문이 있으나 handDrawn이 없으면 앞에 우리 기본 init 추가
   if (trimmed.startsWith("%%{") && trimmed.includes("}%%")) {
-    const directive = `%%{init: {"look":"handDrawn","handDrawnSeed":1}}%%\n`;
+    const directive =
+      '%%{init: {"look":"handDrawn","handDrawnSeed":1}}%%\n';
     return directive + src;
   }
 
-  // 3) YAML frontmatter 파싱해서 config 적용, look 없으면 기본값 강제
   if (trimmed.startsWith("---")) {
     const end = trimmed.indexOf("---", 3);
     if (end > 0) {
@@ -214,22 +335,24 @@ function preprocessMermaidCode(src: string): string {
       if (userCfg) {
         if (userCfg.look) initObj.look = String(userCfg.look);
         if (userCfg.theme) initObj.theme = String(userCfg.theme);
-        if (userCfg.handDrawnSeed != null) initObj.handDrawnSeed = Number(userCfg.handDrawnSeed);
+        if (userCfg.handDrawnSeed != null)
+          initObj.handDrawnSeed = Number(userCfg.handDrawnSeed);
       }
       if (!initObj.look) initObj.look = "handDrawn";
       if (!initObj.handDrawnSeed) initObj.handDrawnSeed = 1;
-      const directive = `%%{init: ${JSON.stringify(initObj)}}%%\n`;
+      const directive = `%%{init: ${JSON.stringify(
+        initObj
+      )}}%%\n`;
       return directive + rest.trimStart();
     }
   }
 
-  // 4) 아무것도 없으면 기본 init 항상 prepend
-  const directive = `%%{init: {"look":"handDrawn","handDrawnSeed":1}}%%\n`;
+  const directive =
+    '%%{init: {"look":"handDrawn","handDrawnSeed":1}}%%\n';
   return directive + src;
 }
 
 function parseSimpleYaml(text: string): any {
-  // 매우 단순한 2단계(depth 1) YAML 파서: key: value 또는 섹션: 다음 줄 들여쓰기 key: value
   const lines = text.split(/\r?\n/);
   const root: any = {};
   let currentKey: string | null = null;
@@ -251,7 +374,9 @@ function parseSimpleYaml(text: string): any {
         }
       }
     } else if (indent >= 2 && currentKey) {
-      const m = line.trim().match(/^([A-Za-z0-9_\-]+)\s*:\s*(.*)$/);
+      const m = line
+        .trim()
+        .match(/^([A-Za-z0-9_\-]+)\s*:\s*(.*)$/);
       if (m) {
         const k = m[1];
         const v = m[2];
@@ -270,6 +395,11 @@ function parseYamlValue(v: string): any {
   if (/^-?\d+(\.\d+)?$/.test(t)) return Number(t);
   return t.replace(/^['"]|['"]$/g, "");
 }
+
+/* ===================== */
+/*   코드블록 하이라이트 */
+/* ===================== */
+
 function CodeBlock({
   raw,
   language,
@@ -315,7 +445,6 @@ function CodeBlock({
     }
   };
 
-
   return (
     <div className="group relative bg-[#111] rounded-xl">
       <button
@@ -325,7 +454,6 @@ function CodeBlock({
       >
         {copied ? "Copied" : "Copy"}
       </button>
-      {/* 줄간격 1.1 적용 */}
       <pre
         className="text-neutral-100 overflow-x-auto"
         style={{ lineHeight: 1.1 }}
@@ -341,11 +469,9 @@ function CodeBlock({
         />
       </pre>
       <style jsx global>{`
-        /* 줄간격과 높이를 줄이기 위한 스타일 조정 */
         code.with-line-numbers {
           line-height: 1.1;
         }
-
         code.with-line-numbers span.line-number,
         code.with-line-numbers span.line-content {
           display: inline-block;
@@ -353,9 +479,8 @@ function CodeBlock({
           padding-top: 0;
           padding-bottom: 0;
         }
-
         code.with-line-numbers span.line-number {
-          color: #9ca3af; /* gray-400 */
+          color: #9ca3af;
           text-align: right;
           padding-right: 0.75rem;
           user-select: none;
@@ -366,14 +491,12 @@ function CodeBlock({
   );
 }
 
-
 function wrapLines(highlightedHtml: string) {
-  // 마지막 개행은 보존하지 않도록 제거 후 처리 (필요 시 &nbsp;로 유지)
   const parts = highlightedHtml.replace(/\n$/, "").split(/\n/);
   return parts
     .map((line, i) => {
       const safe = line;
-      return `<span class=\"line-number\">${i + 1}</span><span class=\"line-content\">${safe}</span>`;
+      return `<span class="line-number">${i + 1}</span><span class="line-content">${safe}</span>`;
     })
     .join("\n");
 }
@@ -385,4 +508,86 @@ function escapeHtml(s: string) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+/* ===================== */
+/*   Lightbox & Thumb    */
+/* ===================== */
+
+function Lightbox({
+  content,
+  theme,
+  onClose,
+  onToggleTheme,
+}: {
+  content: LightboxContent;
+  theme: "dark" | "light";
+  onClose: () => void;
+  onToggleTheme: () => void;
+}) {
+  if (typeof window === "undefined") return null;
+
+  return createPortal(
+    <div
+      className={clsx(
+        "fixed inset-0 z-[100] flex items-center justify-center p-4",
+        theme === "dark" ? "bg-black/90" : "bg-white"
+      )}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 px-3 py-1 rounded-md bg-black/60 text-white text-xs hover:bg-black/80"
+      >
+        닫기 (ESC)
+      </button>
+      <button
+        onClick={onToggleTheme}
+        className="absolute top-4 left-4 px-3 py-1 rounded-md bg-black/60 text-white text-xs hover:bg-black/80"
+      >
+        테마: {theme === "dark" ? "Dark" : "Light"}
+      </button>
+
+      <div className="cursor-zoom-out" onClick={onClose}>
+        {content.kind === "img" ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={content.src}
+            alt={content.alt || "preview"}
+            className="max-w-[95vw] max-h-[95vh] object-contain rounded-lg shadow-2xl"
+          />
+        ) : (
+          <div
+            className="max-w-[95vw] max-h-[95vh] [&>svg]:w-full [&>svg]:h-auto"
+            dangerouslySetInnerHTML={{ __html: content.svg }}
+          />
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function ZoomableThumb({
+  children,
+  onOpen,
+}: {
+  children: React.ReactNode;
+  onOpen: () => void;
+}) {
+  return (
+    <div className="group relative cursor-zoom-in">
+      <button
+        type="button"
+        className="block w-full text-left"
+        onClick={onOpen}
+      >
+        {children}
+      </button>
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className="rounded-full bg-black/60 text-white px-3 py-1 text-xs">
+          클릭하여 확대
+        </span>
+      </div>
+    </div>
+  );
 }

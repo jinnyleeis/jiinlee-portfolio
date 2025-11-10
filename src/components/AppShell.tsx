@@ -41,7 +41,7 @@ function Header() {
           <span className="w-3 h-3 rounded-full bg-accent-orange" />
           <a href="/" className="title-20_sb hover:cursor-pointer">Jiin’s 포트폴리오</a>
         </div>
-        <nav className="flex gap-4 label-14_sb">
+        <nav className="flex gap-4 label-16_sb">
           <a href="/" className="hover:underline">
             Home
           </a>
@@ -83,14 +83,14 @@ function Sidebar({ profile }: { profile: Profile | null }) {
       <nav className="sticky top-[20px] border border-border-soft rounded-2xl min-w-[320px] bg-white/80 px-4 py-4 text-md max-h-[calc(100vh-6rem)] overflow-y-auto flex flex-col">
         {summary && (
           <div className="mb-3">
-            <div className="label-12_md text-gray-500 mb-1">요약</div>
+            <div className="label-14_md text-gray-500 mb-1">요약</div>
             <div className="text-[13px] leading-relaxed whitespace-pre-wrap text-gray-700">
               {summary}
             </div>
             <div className="h-px bg-border-soft my-3" />
           </div>
         )}
-        <div className="label-12_md text-gray-500 mb-2 flex items-center gap-1">
+        <div className="label-14_md text-gray-500 mb-2 flex items-center gap-1">
           <span>목차</span>
         </div>
         <ul className="space-y-1 pb-2">

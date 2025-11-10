@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Project } from "@/lib/types";
 import { getImageUrl } from "@/lib/supabase/storage";
-import Image from "next/image";
 import { ProjectMetaTags } from "@/components/ProjectMetaTags";
 import { ProjectBodyWithToc } from "@/components/ProjectBodyWithToc";
+import { CoverZoom } from "@/components/CoverZoom";
 
 type Props = {
   params: { slug: string };
@@ -58,14 +58,7 @@ export default async function ProjectDetailPage({ params }: Props) {
       </header>
 
       {project.cover_image_path && (
-        <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden ">
-          <Image
-            src={getImageUrl(project.cover_image_path)}
-            alt={project.title}
-            fill
-            className="object-contain object-center"
-          />
-        </div>
+        <CoverZoom src={getImageUrl(project.cover_image_path)} alt={project.title} />
       )}
 
 

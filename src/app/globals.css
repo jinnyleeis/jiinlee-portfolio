@@ -225,10 +225,10 @@
   @apply list-disc pl-5 body-16_r mb-3;
 }
 .markdown-body code {
-  @apply text-sm font-mono;
+  @apply body-16_r font-mono;
 }
 .markdown-body pre {
-  @apply bg-neutral-900 text-neutral-50 rounded-xl p-4 overflow-x-auto mb-4;
+  @apply body-16_r bg-neutral-900 text-neutral-50 rounded-xl p-4 overflow-x-auto mb-4;
 }
 
 /* 헤더  */
@@ -241,7 +241,7 @@
 
 /* 콜아웃 공통 */
 .markdown-callout {
-  @apply rounded-2xl border border-border-soft px-3 py-2 mb-4;
+  @apply rounded-2xl border body-16_r border-border-soft px-3 py-2 mb-4;
   background: #fff9eb;
 }
 
@@ -277,7 +277,7 @@
 
 /* 표 스타일  */
 .markdown-body table {
-  @apply w-full border-collapse text-sm mb-4;
+  @apply w-full border-collapse body-16_r mb-4;
 }
 
 .markdown-body thead {

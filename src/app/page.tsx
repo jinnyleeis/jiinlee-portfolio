@@ -16,7 +16,7 @@ async function getData() {
   const { data: projects } = await supabase
     .from("projects")
     .select("*")
-    .order("id", { ascending: true });
+    .order("sort_order", { ascending: true });
 
   return {
     profile,

@@ -21,6 +21,9 @@ export type Project = {
   body: string | null;    // 본문 (Markdown, 코드블록 포함)
   cover_image_path: string | null;
 
+  // 정렬용
+  sort_order: number | null;
+
   type_tags: string[] | null;
   tech_stack_tags: string[] | null;
   theme_tags: string[] | null;

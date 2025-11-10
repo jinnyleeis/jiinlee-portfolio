@@ -11,18 +11,23 @@ export type TocItem = {
 type TocContextValue = {
   items: TocItem[];
   setItems: (items: TocItem[]) => void;
+  summary: string | null;
+  setSummary: (s: string | null) => void;
 };
 
 const TocContext = React.createContext<TocContextValue>({
   items: [],
   setItems: () => {},
+  summary: null,
+  setSummary: () => {},
 });
 
 export function TocProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = React.useState<TocItem[]>([]);
+  const [summary, setSummary] = React.useState<string | null>(null);
 
   return (
-    <TocContext.Provider value={{ items, setItems }}>
+    <TocContext.Provider value={{ items, setItems, summary, setSummary }}>
       {children}
     </TocContext.Provider>
   );

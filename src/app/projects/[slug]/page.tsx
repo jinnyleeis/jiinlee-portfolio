@@ -68,19 +68,10 @@ export default async function ProjectDetailPage({ params }: Props) {
         </div>
       )}
 
-      {project.summary && (
-        <section className="bg-white/80 rounded-2xl border border-border-soft p-4">
-          <div className="markdown-body">
-            <p className="body-16_r whitespace-pre-wrap">
-              {project.summary}
-            </p>
-          </div>
-        </section>
-      )}
 
       {fullBody && (
         <section className="bg-white/90 rounded-2xl border border-border-soft p-5">
-          <ProjectBodyWithToc markdown={fullBody} />
+          <ProjectBodyWithToc markdown={fullBody} summary={project.summary} />
         </section>
       )}
     </div>

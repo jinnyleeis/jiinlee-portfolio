@@ -28,15 +28,19 @@ function extractToc(markdown: string): TocItem[] {
   return items;
 }
 
-export function ProjectBodyWithToc({ markdown }: { markdown: string }) {
-  const { setItems } = useToc();
+export function ProjectBodyWithToc({ markdown, summary }: { markdown: string; summary?: string | null }) {
+  const { setItems, setSummary } = useToc();
 
   const toc = useMemo(() => extractToc(markdown), [markdown]);
 
   useEffect(() => {
     setItems(toc);
-    return () => setItems([]); // 페이지 떠날 때 TOC 초기화
-  }, [toc, setItems]);
+    setSummary(summary ?? null);
+    return () => {
+      setItems([]); // 페이지 떠날 때 TOC 초기화
+      setSummary(null);
+    };
+  }, [toc, setItems, summary, setSummary]);
 
   return (
     <article className="markdown-body">

@@ -66,7 +66,7 @@ function Footer() {
 
 function Sidebar({ profile }: { profile: Profile | null }) {
   const pathname = usePathname();
-  const { items } = useToc();
+  const { items, summary } = useToc();
 
   if (!pathname) return null;
 
@@ -80,7 +80,16 @@ function Sidebar({ profile }: { profile: Profile | null }) {
   // 프로젝트 상세 + TOC가 있을 때 => 목차 모드
   if (isProjectDetail && items.length > 0) {
     return (
-      <nav className="sticky top-[20px] border border-border-soft rounded-2xl min-w-[320px] bg-white/80 px-3 py-3 text-md max-h-[calc(100vh-6rem)] overflow-y-auto flex flex-col">
+      <nav className="sticky top-[20px] border border-border-soft rounded-2xl min-w-[320px] bg-white/80 px-4 py-4 text-md max-h-[calc(100vh-6rem)] overflow-y-auto flex flex-col">
+        {summary && (
+          <div className="mb-3">
+            <div className="label-12_md text-gray-500 mb-1">요약</div>
+            <div className="text-[13px] leading-relaxed whitespace-pre-wrap text-gray-700">
+              {summary}
+            </div>
+            <div className="h-px bg-border-soft my-3" />
+          </div>
+        )}
         <div className="label-12_md text-gray-500 mb-2 flex items-center gap-1">
           <span>목차</span>
         </div>

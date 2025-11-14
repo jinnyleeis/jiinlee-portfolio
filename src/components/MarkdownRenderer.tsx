@@ -69,7 +69,19 @@ export default function MarkdownRenderer({ value }: { value: string }) {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<{ src?: string }>).detail;
       if (!detail?.src) return;
-      setLightbox({ kind: "img", src: detail.src });
+      const w = window as any;
+      if (w.__md_lightbox_busy) return;
+      // 동시에 여러 MarkdownRenderer가 받지 않도록 전역 가드
+      w.__md_lightbox_busy = true;
+      try {
+        setLightbox({ kind: "img", src: detail.src });
+        // 이 이벤트 이후의 리스너는 막는다
+        (e as any).stopImmediatePropagation?.();
+      } finally {
+        setTimeout(() => {
+          w.__md_lightbox_busy = false;
+        }, 0);
+      }
     };
 
     if (typeof window !== "undefined") {
@@ -525,16 +537,23 @@ function Lightbox({
   onClose: () => void;
   onToggleTheme: () => void;
 }) {
-  if (typeof window === "undefined") return null;
+  const [mounted, setMounted] = React.useState(false);
 
   // 화면 잠금 (배경 스크롤 방지)
-  React.useEffect(() => {
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = original;
-    };
-  }, []);
+    // 화면 잠금 (배경 스크롤 방지) — html/body 모두 잠그고 원복
+    React.useEffect(() => {
+      setMounted(true);
+      const prevBody = document.body.style.overflow;
+      const prevHtml = document.documentElement.style.overflow;
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prevBody;
+        document.documentElement.style.overflow = prevHtml;
+      };
+    }, []);
+
+  if (!mounted) return null;
 
   return createPortal(
     <div

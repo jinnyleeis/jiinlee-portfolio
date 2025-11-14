@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { isAdmin } from "@/lib/auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Project } from "@/lib/types";

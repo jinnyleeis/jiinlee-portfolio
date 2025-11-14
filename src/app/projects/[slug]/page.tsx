@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { notFound } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Project } from "@/lib/types";

@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const runtime = "edge";
 
 import { isAdmin } from "@/lib/auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";

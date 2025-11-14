@@ -1,3 +1,6 @@
+export const runtime = "edge";
+
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -6,7 +9,6 @@ import type { Profile } from "@/lib/types";
 import { AppShell } from "@/components/AppShell";
 
 // Cloudflare Pages (next-on-pages) 빌드 호환을 위해 전역 Edge 런타임 선언
-export const runtime = "edge";
 
 const noto = localFont({
   src: "./fonts/NotoSansKR-VariableFont_wght.ttf",

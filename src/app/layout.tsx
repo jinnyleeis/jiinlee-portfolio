@@ -1,5 +1,5 @@
 
-
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -43,6 +43,7 @@ export default async function RootLayout({
         `}
       >
         <AppShell profile={profile}>{children}</AppShell>
+        <Analytics />
       </body>
     </html>
   );
